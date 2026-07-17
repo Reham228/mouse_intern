@@ -651,21 +651,26 @@ def build_openmc_model_LTMR(params):
     source = openmc.Source(space=point)
     settings = openmc.Settings()
     settings.source = source
-    settings.batches = 100
+    settings.batches = 250
     settings.inactive = 50
 
     if 'Particles' in params.keys():
         settings.particles = int(params['Particles'])
     else:
-        settings.particles = 1000
+        settings.particles = 10000
 
-    if params['Isothermal Temperature Coefficients']:
-        settings.temperature = {
-            'default': params['Common Temperature'],
-            'method': 'interpolation',
-            'tolerance': 50.0
-        }
-    else:
-        settings.temperature = {'method': 'interpolation'}
+    settings.temperature = {
+        'default': params['Common Temperature'],
+        'method': 'interpolation',
+        'tolerance': 50.0
+    }
+    # if params['Isothermal Temperature Coefficients']:
+    #     settings.temperature = {
+    #         'default': params['Common Temperature'],
+    #         'method': 'interpolation',
+    #         'tolerance': 50.0
+    #     }
+    # else:
+    #     settings.temperature = {'method': 'interpolation'}
 
     settings.export_to_xml()
