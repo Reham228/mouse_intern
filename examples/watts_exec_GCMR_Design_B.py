@@ -46,7 +46,7 @@ update_params({
     'reactor type': "GCMR",  # LTMR or GCMR
     'TRISO Fueled': "Yes",
     'Fuel': 'UCO',
-    'Enrichment': 0.09,  # The enrichment is a fraction. It has to be between 0 and 1
+    'Enrichment': 0.08,  # The enrichment is a fraction. It has to be between 0 and 1
     'UO2 atom fraction': 0.7,  # Mixing UO2 and UC by atom fraction
     'Radial Reflector': 'Graphite',
     'Axial Reflector': 'Graphite',
@@ -68,7 +68,7 @@ update_params({
     'Fuel Pin Materials': ['UCO', 'buffer_graphite', 'PyC', 'SiC', 'PyC'],
     'Fuel Pin Radii': [0.0250, 0.0350, 0.0390, 0.0425, 0.0465],  # cm # https://art.inl.gov/NRC%20Training%202019/04_TRISO_Fuel.pdf
     'Compact Fuel Radius': 0.6225,  # cm
-    'Packing Fraction': 0.15,
+    'Packing Fraction': 0.25,
     'Coolant Channel Radius': 0.35,  # cm
     'Moderator Booster Radii': [0.55],  # cm
     'Lattice Pitch': 1.85,
@@ -117,20 +117,20 @@ params['Heat Flux'] = calculate_heat_flux_TRISO(params) # MW/m^2
 # A positive SDM confirms the reactor can be safely shut down with all drums inserted.
 # Currently disabled to save computation time. Enable for final design verification.
 # See watts_exec_LTMR.py for an example with Shutdown Margin Calc = True.
-params['Shutdown Margin Calc'] = True  # True or False
+#params['Shutdown Margin Calc'] = True  # True or False
 
 # --- Isothermal Temperature Coefficient ---
 # Set to True to calculate the temperature reactivity coefficient (pcm/K).
 # A negative coefficient confirms the reactor is self-stabilizing (desired behavior).
 # Currently disabled to save computation time. Enable for safety analysis.
 # See watts_exec_LTMR.py for an example with Isothermal Temperature Coefficients = True.
-#params['Isothermal Temperature Coefficients'] = True  # True or False
+params['Isothermal Temperature Coefficients'] = True  # True or False
 
 # --- Temperature Perturbation ---
 # Required ONLY when 'Isothermal Temperature Coefficients' is True.
 # Units: Kelvin. Typical range: 50-300 K.
 # Uncomment and set this parameter if enabling the temperature coefficient calculation above.
-#params['Temperature Perturbation'] = 100  # K
+params['Temperature Perturbation'] = 100  # K
 
 heat_flux_monitor = monitor_heat_flux(params)
 run_openmc(build_openmc_model_GCMR, heat_flux_monitor, params)
@@ -312,21 +312,22 @@ fuel_calculations(params)  # calculate the fuel mass and SWU
 # elapsed_time = (time.time() - time_start) / 60
 # print('Execution time:', np.round(elapsed_time, 1), 'minutes')
 
-print(f"Most Limiting Shutdown Margin 2D = {params['Most Limiting Shutdown Margin 2D']} pcm")
-print(f"Maximum Shutdown Margin 2D = {params['Maximum Shutdown Margin 2D']} pcm")
-print(f"Most Limiting Shutdown Margin 3D = {params['Most Limiting Shutdown Margin 3D (2D corrected)']} pcm")
-print(f"Maximum Shutdown Margin 3D = {params['Maximum Shutdown Margin 3D (2D corrected)']} pcm")
+# print("The Shutdown Margin Parameter")
+# print(f"Most Limiting Shutdown Margin 2D = {params['Most Limiting Shutdown Margin 2D']} pcm")
+# print(f"Maximum Shutdown Margin 2D = {params['Maximum Shutdown Margin 2D']} pcm")
+# print(f"Most Limiting Shutdown Margin 3D = {params['Most Limiting Shutdown Margin 3D (2D corrected)']} pcm")
+# print(f"Maximum Shutdown Margin 3D = {params['Maximum Shutdown Margin 3D (2D corrected)']} pcm")
 
-print("keff 2D ARI =", params['keff 2D ARI'])
-print("keff 2D ARO =", params['keff 2D ARO'])
-print("keff 3D ARI =", params['keff 3D (2D corrected) ARI'])
-print("keff 3D ARO =", params['keff 3D (2D corrected) ARO'])
+# print("keff 2D ARI SDM =", params['keff 2D ARI shutdown'])
+# print("keff 2D ARO SDM=", params['keff 2D ARO shutdown'])
+# print("keff 3D ARI SDM=", params['keff 3D (2D corrected) ARI shutdown'])
+# print("keff 3D ARO SDM=", params['keff 3D (2D corrected) ARO shutdown'])
 
-# print("Temp Coeff Parameters")
-# print(f"keff 2D (ARO) = {params['keff 2D ARO']}")
-# print(f"keff 3D (ARO) = {params['keff 3D (2D corrected) ARO']}")
-# print(f"keff 2D high temp = {params['keff 2D high temp']}")
-# print(f"keff 3D high temp = {params['keff 3D (2D corrected) high temp']}")
+print("Temp Coeff Parameters")
+print(f"keff 2D (ARO) base temp = {params['keff 2D ARO base temp']}")
+print(f"keff 3D (ARO) base temp = {params['keff 3D (2D corrected) ARO base temp']}")
+print(f"keff 2D high temp = {params['keff 2D ARO high temp']}")
+print(f"keff 3D high temp = {params['keff 3D (2D corrected) ARO high temp']}")
 
-# print(f"Temp Coeff 2D = {params['Temp Coeff 2D']} pcm/k")
-# print(f"Temp Coeff 3D (2D corrected) = {params['Temp Coeff 3D (2D corrected)']} pcm/k")
+print(f"Temp Coeff 2D = {params['Temp Coeff 2D']} pcm/k")
+print(f"Temp Coeff 3D (2D corrected) = {params['Temp Coeff 3D (2D corrected)']} pcm/k")

@@ -206,15 +206,66 @@ def corrected_keff_2d(depletion_2d_results_file, total_height, core_radius=None)
                 f"{estimated_total_leakage_bol_pct:.5f}" if idx == 0 and not np.isnan(estimated_total_leakage_bol_pct) else ""
             ])
 
+    # plt.figure()
+    # plt.plot(time_steps, keff_2d_values, marker='o', linestyle='-', color='r', label='keff_2D')
+    # plt.plot(time_steps, keff_2d_corrected_values, marker='o', linestyle='-', color='g', label='corrected_keff_2D')
+    # plt.xlabel('Time [days]')
+    # plt.ylabel('k-effective')
+    # plt.title('Comparison of keff_2D and corrected_keff_2D vs. Time')
+    # plt.grid(True)
+    # plt.legend()
+    # plt.savefig('keff_comparison_vs_Time.png')
+    # plt.show()
+
+    # Plot only the operating-period portion of the depletion history.
+    # This does not change the depletion calculation or cycle-length result.
+    plot_limit_days = 2000.0
+
+    plot_indices = [
+        i for i, t in enumerate(time_steps)
+        if t <= plot_limit_days
+    ]
+
+    # Include the first point after the limit so the downward trend is visible.
+    if plot_indices:
+        last_index = min(plot_indices[-1] + 2, len(time_steps))
+    else:
+        last_index = min(2, len(time_steps))
+
     plt.figure()
-    plt.plot(time_steps, keff_2d_values, marker='o', linestyle='-', color='r', label='keff_2D')
-    plt.plot(time_steps, keff_2d_corrected_values, marker='o', linestyle='-', color='g', label='corrected_keff_2D')
+
+    plt.plot(
+        time_steps[:last_index],
+        keff_2d_values[:last_index],
+        marker='o',
+        linestyle='-',
+        color='r',
+        label='keff_2D'
+    )
+
+    plt.plot(
+        time_steps[:last_index],
+        keff_2d_corrected_values[:last_index],
+        marker='o',
+        linestyle='-',
+        color='g',
+        label='corrected_keff_2D'
+    )
+
+    plt.axhline(
+        y=1.0,
+        color='k',
+        linestyle='--',
+        label='k = 1'
+    )
+
     plt.xlabel('Time [days]')
     plt.ylabel('k-effective')
     plt.title('Comparison of keff_2D and corrected_keff_2D vs. Time')
     plt.grid(True)
     plt.legend()
-    plt.savefig('keff_comparison_vs_Time.png')
+    plt.tight_layout()
+    plt.savefig('keff_comparison_vs_Time.png', dpi=300)
     plt.show()
 
     cycle_length = None
@@ -236,6 +287,7 @@ def corrected_keff_2d(depletion_2d_results_file, total_height, core_radius=None)
     else:
         print("k = 1.0 not reached within the given time steps.")
         raise ValueError("Cannot compute fuel cycle length: k=1.0 was never reached.")
+
 
     return (
         round_cycle_length,
